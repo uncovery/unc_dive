@@ -100,7 +100,7 @@ function unc_dive_get_one($computer_type, $source, $dive_id) {
  * @param type $source
  * @return boolean
  */
-function unc_divelog_dive_latest($computer_type, $source) {
+function unc_dive_latest($computer_type, $source) {
     global $UNC_DIVE;
 
     $DB = unc_dive_connect_db($computer_type, $source);

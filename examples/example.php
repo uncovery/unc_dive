@@ -11,7 +11,7 @@ $source_file = './sample.db';
 $avail_dives = unc_dive_list($source_format, $source_file);
 
 // get the id of the latest dive
-$latest_dive_id = unc_divelog_dive_latest($source_format, $source_file);
+$latest_dive_id = unc_dive_latest($source_format, $source_file);
 
 // get the dive data for the latest dive
 $data = unc_dive_get_one($source_format, $source_file, $latest_dive_id);
