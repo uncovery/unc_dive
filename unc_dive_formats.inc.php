@@ -108,54 +108,58 @@ $UNC_DIVE = array(
     )
 );
 
-function unc_dive_conversions_Suunto_D4i($format, $data) {
-    global $UNC_DIVE;
-    $type_var = 'Suunto_D4i';
-    switch ($format) {
-        case $type_var . '_dive_types': 
-            switch ($data) {
-                case 0: 
-                    return 'Dive'; // does this exist?
-                case 1:
-                    return 'Nitrox Dive';
-                case 2:
-                    return 'Dive';
-                case 3:
-                    return 'Free Dive';
-            }
-        case $type_var . '_SampleBlob': // four-digit hex format of a float such as D7 A3 D0 3F = 1.63...
-            //  see here: http://lists.subsurface-divelog.org/pipermail/subsurface/2014-November/015798.html
-            // strip of X'
-            $data_clean = substr($data, 2);
-            $data_type = substr($data_clean, 1, 1);
-            $chunk_split = $UNC_DIVE[$type_var]['formats'][$data_type];
-            $pattern = $chunk_split['pattern'];
-            $fields = $chunk_split['fields'];
-            $data_clipped = substr($data_clean, 2);
-            $data_str = chunk_split($data_clipped, $chunk_split['chunk_length'], "|");
-            $dive_array = explode("|", $data_str);            
-            $dive_path = array();
-            $i = 0;
-            foreach ($dive_array as $dive_str) {
-                $results = false;
-                preg_match($pattern, $dive_str, $results);
-                foreach ($fields as $field => $format) {
-                    if (!isset($results[$field])) {
-                        continue;
-                    }
-                    $data = $results[$field];
-                    $converted = unc_dive_data_convert($type_var, $format, $data);
-                    $dive_path[$i][$field] = $converted; // D4i measures every 20 seconds
+class conversions extends unc_dive {
+    
+    protected function convert_Suunto_D4i($format, $data) {
+        global $UNC_DIVE;
+        
+        $type_var = 'Suunto_D4i';
+        switch ($format) {
+            case $type_var . '_dive_types': 
+                switch ($data) {
+                    case 0: 
+                        return 'Dive'; // does this exist?
+                    case 1:
+                        return 'Nitrox Dive';
+                    case 2:
+                        return 'Dive';
+                    case 3:
+                        return 'Free Dive';
                 }
-                $i++;
-            }
-            return $dive_path;
-        case $type_var . '_seconds_since_0001': // suunto UNIX-like timestamp
-            $number_of_seconds = 62135600400;
-            $seconds = $data / 10000000 - $number_of_seconds;
-            $date = new DateTime();
-            $date->setTimestamp($seconds);
-            $date_str = $date->format("Y-m-d H:i:s");
-            return $date_str;
+            case $type_var . '_SampleBlob': // four-digit hex format of a float such as D7 A3 D0 3F = 1.63...
+                //  see here: http://lists.subsurface-divelog.org/pipermail/subsurface/2014-November/015798.html
+                // strip of X'
+                $data_clean = substr($data, 2);
+                $data_type = substr($data_clean, 1, 1);
+                $chunk_split = $UNC_DIVE[$type_var]['formats'][$data_type];
+                $pattern = $chunk_split['pattern'];
+                $fields = $chunk_split['fields'];
+                $data_clipped = substr($data_clean, 2);
+                $data_str = chunk_split($data_clipped, $chunk_split['chunk_length'], "|");
+                $dive_array = explode("|", $data_str);            
+                $dive_path = array();
+                $i = 0;
+                foreach ($dive_array as $dive_str) {
+                    $results = false;
+                    preg_match($pattern, $dive_str, $results);
+                    foreach ($fields as $field => $format) {
+                        if (!isset($results[$field])) {
+                            continue;
+                        }
+                        $data = $results[$field];
+                        $converted = $this->data_convert($format, $data);
+                        $dive_path[$i][$field] = $converted; // D4i measures every 20 seconds
+                    }
+                    $i++;
+                }
+                return $dive_path;
+            case $type_var . '_seconds_since_0001': // suunto UNIX-like timestamp
+                $number_of_seconds = 62135600400;
+                $seconds = $data / 10000000 - $number_of_seconds;
+                $date = new DateTime();
+                $date->setTimestamp($seconds);
+                $date_str = $date->format("Y-m-d H:i:s");
+                return $date_str;
+        }
     }
 }
