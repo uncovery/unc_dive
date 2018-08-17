@@ -143,7 +143,7 @@ function unc_dive_conversions_D4i($format, $data) {
                         continue;
                     }
                     $data = $results[$field];
-                    $converted = uncd_divelog_data_convert($format, $data);
+                    $converted = unc_dive_data_convert('D4i', $format, $data);
                     $dive_path[$i][$field] = $converted; // D4i measures every 20 seconds
                 }
                 $i++;
