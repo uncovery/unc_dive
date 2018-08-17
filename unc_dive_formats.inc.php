@@ -6,7 +6,7 @@ $UNC_DIVE = array(
         'binary_float', 'hex',
     ),
     // SUUNTO D4i read with D5 dive software, exported SQLite DB, export this DB by using the "Backup" in the windows software
-    'D4i' => array(
+    'Suunto_D4i' => array(
         'db_format' => 'sqlite',
         'fieldmap' => array(
             'dive_number' => array('field_name' => 'DiveId'),

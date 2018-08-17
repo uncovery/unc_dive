@@ -2,7 +2,7 @@
 
 require_once('./../unc_dive.inc.php');
 
-$source_format = 'D4i';
+$source_format = 'Suunto_D4i';
 
 // please provide your own backup file from the D4i computer
 $source_file = './sample.db';
