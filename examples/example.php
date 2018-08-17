@@ -8,7 +8,7 @@ $data = "./default.db";
 $type = "Suunto_D4i";
 
 // requiring class...
-require_once('./../unc_dive.inc.php');
+require_once('./../unc_dive.class.php');
 
 // creating instance....
 $dive = new unc_dive();
