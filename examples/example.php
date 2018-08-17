@@ -12,7 +12,7 @@ require_once('./../unc_dive.class.php');
 
 // creating instance....
 $dive = new unc_dive();
-var_dump($dive);
+// var_dump($dive);
 
 $dive->set_debug(false);
 
