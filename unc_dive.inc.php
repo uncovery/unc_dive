@@ -35,7 +35,7 @@ function unc_dive_list($computer_type, $file) {
 
     $dive_data = array();
     while ($row = $results->fetchArray(SQLITE3_ASSOC)) {
-        $date = unc_dive_data_convert($date_format, $row['date_str']);
+        $date = unc_dive_data_convert($computer_type, $date_format, $row['date_str']);
         $dive_id = $row['dive_number'];
         $date_obj = new DateTime($date);
         $day = $date_obj->format("Y-m-d");
