@@ -10,13 +10,13 @@ $UNC_DIVE = array(
         'db_format' => 'sqlite',
         'fieldmap' => array(
             'dive_number' => array('field_name' => 'DiveId'),
-            'start_time' => array('field_name' => 'StartTime', 'format' => 'suunto_seconds_since_0001'),
+            'start_time' => array('field_name' => 'StartTime', 'format' => 'Suunto_D4i_seconds_since_0001'),
             'max_depth' => array('field_name' => 'MaxDepth'),
             'avg_depth' => array('field_name' => 'AvgDepth'),
             'serial_no' => array('field_name' => 'SerialNumber'),
-            'dive_path' => array('field_name' => 'quote(SampleBlob)', 'format' => 'D4i_SampleBlob'),
+            'dive_path' => array('field_name' => 'quote(SampleBlob)', 'format' => 'Suunto_D4i_SampleBlob'),
             'dive_time' => array('field_name' => 'Duration'), // in seconds
-            'dive_type' => array('field_name' => 'Mode', 'format' => 'D4i_dive_types'),
+            'dive_type' => array('field_name' => 'Mode', 'format' => 'Suunto_D4i_dive_types'),
         ),
         'dive_table_name' => 'Dive',
         'filter' => 'Mode < 3', // no free diving for now
@@ -108,10 +108,11 @@ $UNC_DIVE = array(
     )
 );
 
-function unc_dive_conversions_D4i($format, $data) {
+function unc_dive_conversions_Suunto_D4i($format, $data) {
     global $UNC_DIVE;
+    $type_var = 'Suunto_D4i';
     switch ($format) {
-        case 'D4i_dive_types': 
+        case $type_var . '_dive_types': 
             switch ($data) {
                 case 0: 
                     return 'Dive'; // does this exist?
@@ -122,12 +123,12 @@ function unc_dive_conversions_D4i($format, $data) {
                 case 3:
                     return 'Free Dive';
             }
-        case 'D4i_SampleBlob': // four-digit hex format of a float such as D7 A3 D0 3F = 1.63...
+        case $type_var . '_SampleBlob': // four-digit hex format of a float such as D7 A3 D0 3F = 1.63...
             //  see here: http://lists.subsurface-divelog.org/pipermail/subsurface/2014-November/015798.html
             // strip of X'
             $data_clean = substr($data, 2);
             $data_type = substr($data_clean, 1, 1);
-            $chunk_split = $UNC_DIVE['D4i']['formats'][$data_type];
+            $chunk_split = $UNC_DIVE[$type_var]['formats'][$data_type];
             $pattern = $chunk_split['pattern'];
             $fields = $chunk_split['fields'];
             $data_clipped = substr($data_clean, 2);
@@ -143,13 +144,13 @@ function unc_dive_conversions_D4i($format, $data) {
                         continue;
                     }
                     $data = $results[$field];
-                    $converted = unc_dive_data_convert('D4i', $format, $data);
+                    $converted = unc_dive_data_convert($type_var, $format, $data);
                     $dive_path[$i][$field] = $converted; // D4i measures every 20 seconds
                 }
                 $i++;
             }
             return $dive_path;
-        case 'suunto_seconds_since_0001': // suunto UNIX-like timestamp
+        case $type_var . '_seconds_since_0001': // suunto UNIX-like timestamp
             $number_of_seconds = 62135600400;
             $seconds = $data / 10000000 - $number_of_seconds;
             $date = new DateTime();
